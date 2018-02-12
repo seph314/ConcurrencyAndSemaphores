@@ -18,7 +18,12 @@ public class ParentBird extends Thread {
 
     @Override
     public void run() {
-        dish.gatherWorms(this);
+        try {
+            dish.gatherWorms(this);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
     }
 }
 

@@ -1,5 +1,6 @@
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Represents a dish with bird food
@@ -13,7 +14,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class Dish{
 
-    int numberOfWorms;
+    private int numberOfWorms;
 
     public Dish(int numberOfWorms) {
         this.numberOfWorms = numberOfWorms;
@@ -24,7 +25,9 @@ public class Dish{
      */
     private Semaphore eatSemaphore = new Semaphore(1);
     private Semaphore emptyDishSemaphore = new Semaphore(1);
+//    private Semaphore chirp = new Semaphore(1);
     private boolean empty = false; /* keeps track if dish is empty or not */
+    private AtomicInteger ai = new AtomicInteger();
 
 
     /**
@@ -61,8 +64,10 @@ public class Dish{
             empty = emptyDishSemaphore.tryAcquire(1, TimeUnit.SECONDS); /* set empty to true (one BabyBird only) */
             if (empty) {
                 System.out.println(babyBird.getName() + " chirps real loud! There is no more food!\n\n");
-                new ParentBird(this).run();
-                emptyDishSemaphore.release(); /* release empty dish semaphore */
+//                chirp.release();
+                ai.getAndIncrement();
+//                new ParentBird(this).run();
+//                emptyDishSemaphore.release(); /* release empty dish semaphore */
 //                Thread.sleep(200);
 //                eat(babyBird); /* recursive call if empty */
 
@@ -81,14 +86,16 @@ public class Dish{
     /**
      * Let parentBird work here...
      */
-    public void gatherWorms(ParentBird parentBird) {
-        if (empty) {
-            System.out.println(parentBird.getName() + " says: Dont freight little ones! More food is coming!");
+    public void gatherWorms(ParentBird parentBird) throws InterruptedException {
+        if (ai.get() == 1) {
+//        if (chirp.tryAcquire()) {
+            System.out.println("\n" + parentBird.getName() + " says: Dont freight little ones! More food is coming!");
             numberOfWorms = (int) (Math.random() * 10 + 10); /* get random number of new worms */
             System.out.println("I got you " + numberOfWorms + " more tasty worms, chirps!\n\n");
-//            emptyDishSemaphore.release(); /* release empty dish semaphore */
-            empty = false;
-
+            emptyDishSemaphore.release(); /* release empty dish semaphore */
+            ai.getAndDecrement();
         }
+//        System.out.println("ParentBird's name " + parentBird.getName());
     }
+
 }

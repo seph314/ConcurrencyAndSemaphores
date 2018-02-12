@@ -41,6 +41,7 @@ public class Driver {
             babyBirds.add(new BabyBird(dish));
         }
 
+        ParentBird parentBird = new ParentBird(dish);
 
         /* create BabyBird threads */
 //        for (int i=0; i<numberOfBabyBirds; i++) {
@@ -53,6 +54,7 @@ public class Driver {
         int i = 0;
         while (i < 1e2) {
             babyBirds.parallelStream().forEach(BabyBird::run);
+            parentBird.run();
             i++;
         }
 
