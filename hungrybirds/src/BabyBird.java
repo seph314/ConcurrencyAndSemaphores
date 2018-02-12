@@ -22,11 +22,12 @@ public class BabyBird extends Thread {
     @Override
     public void run() {
         try {
+            Thread.sleep((long) (Math.random() * 200));
+            System.out.println("BabyBird " + this.getName() + " woke up and is hungry...");
             dish.eat(this);
-            Thread.sleep((long) (Math.random() * 1000));
+            Thread.sleep((long) (Math.random() * 200));
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
-
 }

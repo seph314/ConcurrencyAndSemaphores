@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit;
  * The parent bird flies off and gathers W more worms, puts them in the dish, and then waits for the dish to be empty again.
  * This pattern repeats forever.
  */
-public class Dish {
+public class Dish{
 
     int numberOfWorms;
 
@@ -24,7 +24,7 @@ public class Dish {
      */
     private Semaphore eatSemaphore = new Semaphore(1);
     private Semaphore emptyDishSemaphore = new Semaphore(1);
-    boolean empty = false; /* keeps track if dish is empty or not */
+    private boolean empty = false; /* keeps track if dish is empty or not */
 
 
     /**
@@ -38,32 +38,40 @@ public class Dish {
             try {
                 permit = eatSemaphore.tryAcquire(1, TimeUnit.SECONDS);
                 if (permit) {
-                    System.out.println("eatSemaphore acquired by: " + babyBird.getName());
+//                    System.out.println("eatSemaphore acquired by: " + babyBird.getName());
+                    System.out.println(babyBird.getName() + " ate a worm!");
                     numberOfWorms--;
                     System.out.println("Number of worms left: " + numberOfWorms);
 
                 } else {
-                    System.out.println("Could not acquire Semaphore");
+                    System.out.println("Could not acquire Semaphore\n");
                 }
             } catch (InterruptedException e) {
                 throw new IllegalStateException(e);
             } finally {
                 if (permit) {
+//                    System.out.println("QueLength " + eatSemaphore.hasQueuedThreads());
+                    System.out.println(babyBird.getName() + " released the eatSemaphore");
                     eatSemaphore.release();
-//                    eat(babyBird);
-
+//                    Thread.sleep(200);
+//                    eat(babyBird); /* recursive call if there is food left */
                 }
             }
         } else {
             empty = emptyDishSemaphore.tryAcquire(1, TimeUnit.SECONDS); /* set empty to true (one BabyBird only) */
             if (empty) {
-                System.out.println(babyBird.getName() + " chirps real loud! There is no more food!");
+                System.out.println(babyBird.getName() + " chirps real loud! There is no more food!\n\n");
                 new ParentBird(this).run();
                 emptyDishSemaphore.release(); /* release empty dish semaphore */
+//                Thread.sleep(200);
+//                eat(babyBird); /* recursive call if empty */
+
+
             }
 //            babyBird.run();
 
         }
+//        eat(babyBird);
 
 //        }
 
@@ -77,7 +85,7 @@ public class Dish {
         if (empty) {
             System.out.println(parentBird.getName() + " says: Dont freight little ones! More food is coming!");
             numberOfWorms = (int) (Math.random() * 10 + 10); /* get random number of new worms */
-            System.out.println("I got you " + numberOfWorms + " more tasty worms, chirps!");
+            System.out.println("I got you " + numberOfWorms + " more tasty worms, chirps!\n\n");
 //            emptyDishSemaphore.release(); /* release empty dish semaphore */
             empty = false;
 

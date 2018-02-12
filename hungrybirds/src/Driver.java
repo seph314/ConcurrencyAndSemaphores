@@ -1,21 +1,23 @@
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 /**
-* H U N G R Y   B I R D S   P R O B L E M
-*
-* Given are n baby birds and one parent bird.
-* The baby birds eat out of a common dish that initially contains W worms.
-* Each baby bird repeatedly takes a worm, eats it, sleeps for a while, takes another worm, and so on.
-* If the dish is empty, the baby bird who discovers the empty dish chirps real loud to awaken the parent bird.
-* The parent bird flies off and gathers W more worms, puts them in the dish, and then waits for the dish to be empty again.
-* This pattern repeats forever.
-*
-* Develop and implement a multithreaded program to simulate the actions of the birds.
-* Represent the birds as concurrent threads (i.e. array of "babyBird" threads and a "parentBird" thread), and the dish as a critical shared resource that can be accessed by at most one bird at a time.
-* Use only semaphores for synchronization.
-* Your program should print a trace of interesting simulation events.
-* Is your solution fair? Explain when presenting homework.
-*/
+ * H U N G R Y   B I R D S   P R O B L E M
+ * <p>
+ * Given are n baby birds and one parent bird.
+ * The baby birds eat out of a common dish that initially contains W worms.
+ * Each baby bird repeatedly takes a worm, eats it, sleeps for a while, takes another worm, and so on.
+ * If the dish is empty, the baby bird who discovers the empty dish chirps real loud to awaken the parent bird.
+ * The parent bird flies off and gathers W more worms, puts them in the dish, and then waits for the dish to be empty again.
+ * This pattern repeats forever.
+ * <p>
+ * Develop and implement a multithreaded program to simulate the actions of the birds.
+ * Represent the birds as concurrent threads (i.e. array of "babyBird" threads and a "parentBird" thread), and the dish as a critical shared resource that can be accessed by at most one bird at a time.
+ * Use only semaphores for synchronization.
+ * Your program should print a trace of interesting simulation events.
+ * Is your solution fair? Explain when presenting homework.
+ */
 
 public class Driver {
 
@@ -33,10 +35,27 @@ public class Driver {
         System.out.println("Number of baby birds: ");
         numberOfBabyBirds = scanner.nextInt();
 
-        /* create BabyBird threads */
-        for (int i=0; i < numberOfBabyBirds; i++){
-            new BabyBird(dish).run();
+
+        List<BabyBird> babyBirds = new ArrayList<>();
+        for (int i=0; i<numberOfBabyBirds; i++){
+            babyBirds.add(new BabyBird(dish));
         }
+
+
+        /* create BabyBird threads */
+//        for (int i=0; i<numberOfBabyBirds; i++) {
+//            new BabyBird(dish);
+//        }
+
+//        for (int i=0; i<5; i++){
+//            babyBirds.parallelStream().forEach(BabyBird::run);
+//        }
+        int i = 0;
+        while (i < 1e2) {
+            babyBirds.parallelStream().forEach(BabyBird::run);
+            i++;
+        }
+
 
         /* create ParentBird thread */
 //        new ParentBird(dish).run();
