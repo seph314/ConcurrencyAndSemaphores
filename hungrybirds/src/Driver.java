@@ -53,13 +53,10 @@ public class Driver {
 //        }
 
         /* stream the list of BabyBirds and run() each of them */
-        int i = 0;
-        while (i < 1e2) {
+        while (true) {
             babyBirds.parallelStream().forEach(BabyBird::run);
             parentBird.run();
-            i++;
         }
-
 
         /* create ParentBird thread */
 //        new ParentBird(dish).run();
