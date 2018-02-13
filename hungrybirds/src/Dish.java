@@ -1,6 +1,5 @@
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Represents a dish with bird food
@@ -25,9 +24,7 @@ public class Dish{
      */
     private Semaphore eatSemaphore = new Semaphore(1);
     private Semaphore emptyDishSemaphore = new Semaphore(1);
-//    private Semaphore chirp = new Semaphore(1);
-    private boolean empty = false; /* keeps track if dish is empty or not */
-    private AtomicInteger ai = new AtomicInteger();
+    private Semaphore chirp = new Semaphore(0);
 
 
     /**
@@ -35,7 +32,6 @@ public class Dish{
      */
     public void eat(BabyBird babyBird) throws InterruptedException {
 
-//        while(!empty){
         if (numberOfWorms > 0) {
             boolean permit = false;
             try {
@@ -53,47 +49,29 @@ public class Dish{
                 throw new IllegalStateException(e);
             } finally {
                 if (permit) {
-//                    System.out.println("QueLength " + eatSemaphore.hasQueuedThreads());
                     System.out.println(babyBird.getName() + " released the eatSemaphore");
                     eatSemaphore.release();
-//                    Thread.sleep(200);
-//                    eat(babyBird); /* recursive call if there is food left */
                 }
             }
         } else {
-            empty = emptyDishSemaphore.tryAcquire(1, TimeUnit.SECONDS); /* set empty to true (one BabyBird only) */
+            boolean empty = emptyDishSemaphore.tryAcquire(1, TimeUnit.SECONDS);
             if (empty) {
-                System.out.println(babyBird.getName() + " chirps real loud! There is no more food!\n\n");
-//                chirp.release();
-                ai.getAndIncrement();
-//                new ParentBird(this).run();
-//                emptyDishSemaphore.release(); /* release empty dish semaphore */
-//                Thread.sleep(200);
-//                eat(babyBird); /* recursive call if empty */
-
-
+                System.out.println(babyBird.getName() + " CHIRPS REEEAL LOUD! There is no more food!\n\n");
+                chirp.release(1);
             }
-//            babyBird.run();
-
         }
-//        eat(babyBird);
-
-//        }
-
     }
-
 
     /**
      * Let parentBird work here...
      */
-    public void gatherWorms(ParentBird parentBird) throws InterruptedException {
-        if (ai.get() == 1) {
-//        if (chirp.tryAcquire()) {
+    public void gatherWorms(ParentBird parentBird) {
+        if (chirp.tryAcquire()) {
             System.out.println("\n" + parentBird.getName() + " says: Dont freight little ones! More food is coming!");
             numberOfWorms = (int) (Math.random() * 10 + 10); /* get random number of new worms */
             System.out.println("I got you " + numberOfWorms + " more tasty worms, chirps!\n\n");
             emptyDishSemaphore.release(); /* release empty dish semaphore */
-            ai.getAndDecrement();
+//            ai.getAndDecrement();
         }
 //        System.out.println("ParentBird's name " + parentBird.getName());
     }

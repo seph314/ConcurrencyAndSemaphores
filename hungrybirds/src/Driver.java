@@ -51,6 +51,8 @@ public class Driver {
 //        for (int i=0; i<5; i++){
 //            babyBirds.parallelStream().forEach(BabyBird::run);
 //        }
+
+        /* stream the list of BabyBirds and run() each of them */
         int i = 0;
         while (i < 1e2) {
             babyBirds.parallelStream().forEach(BabyBird::run);
